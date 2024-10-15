@@ -1,7 +1,16 @@
-# 2024년 3학년 2학기 대림대학교 학생 프로젝트
+# flutter_daelim_2nd_smstr
 
-## 프로젝트 소개
-- 1주차..5주차
-  - X
-- 6주차
-  - 
+A new Flutter project.
+
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.

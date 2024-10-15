@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "dev.fleecy" "\0"
-            VALUE "FileDescription", "daelim_project" "\0"
+            VALUE "CompanyName", "com.example" "\0"
+            VALUE "FileDescription", "flutter_daelim_2nd_smstr" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "daelim_project" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 dev.fleecy. All rights reserved." "\0"
-            VALUE "OriginalFilename", "daelim_project.exe" "\0"
-            VALUE "ProductName", "daelim_project" "\0"
+            VALUE "InternalName", "flutter_daelim_2nd_smstr" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
+            VALUE "OriginalFilename", "flutter_daelim_2nd_smstr.exe" "\0"
+            VALUE "ProductName", "flutter_daelim_2nd_smstr" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

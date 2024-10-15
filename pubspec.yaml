@@ -1,33 +1,33 @@
-name: daelim_project
-description: "대림대학교 2024년 3학년 2학기 프로젝트"
-publish_to: 'none'
+name: daelim
+description: "대림대 2학기 수업 프로젝트."
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.5.3
-
+  sdk: ">=3.4.3 <4.0.0"
 dependencies:
   flutter:
     sdk: flutter
 
   # NOTE: Assets
-  cupertino_icons: ^1.0.8
-  google_fonts: ^6.2.1
+  cupertino_icons: ^1.0.6
 
   # NOTE: Core
-  easy_extension: 
+  easy_extension:
     git:
       url: https://github.com/scadasystems/Easy-Extension.git
   flex_color_scheme: ^7.3.1
   go_router: ^14.2.8
   http:
+  google_fonts: ^6.2.1
   shared_preferences: ^2.3.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^4.0.0
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true

@@ -1,10 +1,10 @@
 # Project-level configuration.
 cmake_minimum_required(VERSION 3.14)
-project(daelim_project LANGUAGES CXX)
+project(flutter_daelim_2nd_smstr LANGUAGES CXX)
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
-set(BINARY_NAME "daelim_project")
+set(BINARY_NAME "flutter_daelim_2nd_smstr")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
