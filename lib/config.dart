@@ -2,8 +2,9 @@
 const String baseUrl = 'https://daelim-server.fleecy.dev/functions/v1';
 const String getTokenUrl = '$baseUrl/auth/get-token';
 const String getUserDataUrl = '$baseUrl/auth/my-data';
+const String setProfileImageUrl = '$baseUrl/auth/set-profile-image';
 
-//NOTE:아이콘URL
+// NOTE:아이콘URL
 const String icGoogle =
     'https://daelim-server.fleecy.dev/storage/v1/object/public/icons/google.png';
 const String icApple =

@@ -1,20 +1,38 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:daelim/common/scaffold/app_scaffold.dart';
 import 'package:daelim/config.dart';
 import 'package:daelim/helper/sotrage_helper.dart';
 import 'package:daelim/routes/app_screen.dart';
 import 'package:easy_extension/easy_extension.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
-class SettingScreen extends StatelessWidget {
+class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
+
+  @override
+  State<SettingScreen> createState() => _SettingScreenState();
+}
+
+class _SettingScreenState extends State<SettingScreen> {
+  String? _name;
+  String? _studentNumber;
+  String? _profileImageUrl;
 
   final int _selectedIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
   // NOTE: 유저 정보 불러오기
-  Future<Map<String, dynamic>> fetchUserData() async {
+  Future<void> _fetchUserData() async {
     final tokenType = StorageHelper.authData!.tokenType.firstUpperCase;
     final token = StorageHelper.authData!.accessToken;
 
@@ -24,53 +42,104 @@ class SettingScreen extends StatelessWidget {
     final statusCode = response.statusCode;
     final body = utf8.decode(response.bodyBytes);
 
+// NOTE 에러 발생
     if (statusCode != 200) {
-      throw Exception(body);
+      // throw Exception(body);
+      setState(() {
+        _name = '데이터를 불러올 수 없습니다.';
+        _studentNumber = body;
+        _profileImageUrl = '';
+      });
+      return;
     }
-    return jsonDecode(body);
+    final userData = jsonDecode(body);
+
+    setState(() {
+      _name = userData!['name'];
+      _studentNumber = userData['student_number'];
+      _profileImageUrl = userData['profile_image'];
+    });
+  }
+
+//NOTE 프로필 이미지 없로드
+  Future<void> _uploadProfileImage() async {
+    if (_profileImageUrl == null || _profileImageUrl?.isEmpty == true) {
+      return;
+    }
+    final FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+    );
+    if (result == null) return;
+
+    final imageFile = result.files.single;
+    final imageBytes = imageFile.bytes;
+    final imagePath = imageFile.path;
+
+    Log.green(imagePath);
+
+    if (imagePath == null) return;
+
+    final tokenType = StorageHelper.authData!.tokenType.firstUpperCase;
+    final token = StorageHelper.authData!.accessToken;
+
+    final uploadRequest = http.MultipartRequest(
+        'POST', Uri.parse(setProfileImageUrl))
+      ..headers.addAll({HttpHeaders.authorizationHeader: '$tokenType $token'})
+      ..files.add(await http.MultipartFile.fromPath('image', imagePath,
+          contentType: MediaType('application', 'x-tar')));
+
+    Log.green('이미지 업로드');
+    final response = await uploadRequest.send();
+
+    if (response.statusCode != 200) {
+      Log.red('프로필 이미지 업로드 실패 ${response.statusCode}');
+      return;
+    }
+    Log.green('프로필 이미지 업로드 완료 ${response.statusCode}');
+
+    _fetchUserData();
+
+//     var uri = Uri.https('example.com', 'create');
+// var request = http.MultipartRequest('POST', uri)
+//   ..fields['user'] = 'nweiz@google.com'
+//   ..files.add(await http.MultipartFile.fromPath(
+//       'package', 'build/package.tar.gz',
+//       contentType: MediaType('application', 'x-tar')));
+// var response = await request.send();
+// if (response.statusCode == 200) print('Uploaded!');
   }
 
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
       appScreen: AppScreen.setting,
-      child: Column(children: [
-        FutureBuilder(
-            future: fetchUserData(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return Container(
-                    alignment: Alignment.center,
-                    margin: const EdgeInsets.only(top: 20),
-                    child: const Center(child: CircularProgressIndicator()));
-              }
-              final error = snapshot.error;
-              final userData = snapshot.data;
-
-              String name = '';
-              String studentNumber = '';
-              String profileImageUrl = '';
-
-              if (error != null) {
-                name = '';
-                studentNumber = '';
-              } else {
-                name = userData!['name'];
-                studentNumber = userData['student_number'];
-                profileImageUrl = userData['profile_image'];
-              }
-
-              Log.green(userData);
-
-              return ListTile(
-                  leading: CircleAvatar(
-                    // backgroundColor: Colors.grey,
-                    backgroundImage: NetworkImage(profileImageUrl),
-                  ),
-                  title: Text(name),
-                  subtitle: Text(studentNumber));
-            })
-      ]),
+      child: Column(
+        children: [
+          ListTile(
+            leading: InkWell(
+              onTap: _uploadProfileImage,
+              child: CircleAvatar(
+                // backgroundColor: Colors.grey,
+                backgroundImage: _profileImageUrl != null
+                    ? _profileImageUrl!.isNotEmpty
+                        ? NetworkImage(_profileImageUrl!)
+                        : null
+                    : null,
+                child: _profileImageUrl != null
+                    ? _profileImageUrl!.isEmpty
+                        ? const Icon(Icons.cancel)
+                        : null
+                    : const CircularProgressIndicator(),
+              ),
+            ),
+            title: Text(_name ?? '데이터 로딩중..'),
+            subtitle: _studentNumber != null
+                ? Text(_studentNumber!,
+                    maxLines: 1, overflow: TextOverflow.ellipsis)
+                : null,
+          )
+        ],
+      ),
       // bottomNavigationBar: BottomNavigationBar(items: const [
       //   BottomNavigationBarItem(icon: Icon(Icons.home), label: "홈"),
       //   BottomNavigationBarItem(icon: Icon(Icons.settings), label: "설정")
