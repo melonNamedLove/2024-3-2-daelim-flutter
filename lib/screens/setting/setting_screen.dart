@@ -10,6 +10,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -73,9 +74,16 @@ class _SettingScreenState extends State<SettingScreen> {
 
     final imageFile = result.files.single;
     final imageBytes = imageFile.bytes;
+    final imageName = imageFile.name;
     final imagePath = imageFile.path;
+    final imageMime = lookupMimeType(imageName) ?? "image/jpeg"; //   image/jpeg
 
-    Log.green(imagePath);
+// NOTE Mime 타입 자르기
+    final mimeSplit = imageMime.split('/');
+    final mimeType = mimeSplit.first;
+    final mimeSubType = mimeSplit.last;
+
+    Log.green('프로필 이미지 업로드 imageName:$imageName imageMime:$imageMime');
 
     if (imagePath == null) return;
 
@@ -86,16 +94,17 @@ class _SettingScreenState extends State<SettingScreen> {
         'POST', Uri.parse(setProfileImageUrl))
       ..headers.addAll({HttpHeaders.authorizationHeader: '$tokenType $token'})
       ..files.add(await http.MultipartFile.fromPath('image', imagePath,
-          contentType: MediaType('application', 'x-tar')));
+          contentType: MediaType(mimeType, mimeSubType)));
 
     Log.green('이미지 업로드');
     final response = await uploadRequest.send();
+    final uploadResult = await http.Response.fromStream(response);
 
-    if (response.statusCode != 200) {
-      Log.red('프로필 이미지 업로드 실패 ${response.statusCode}');
+    if (uploadResult.statusCode != 200) {
+      Log.red('프로필 이미지 업로드 실패 ${uploadResult.statusCode}');
       return;
     }
-    Log.green('프로필 이미지 업로드 완료 ${response.statusCode}');
+    Log.green('프로필 이미지 업로드 완료 ${uploadResult.statusCode}');
 
     _fetchUserData();
 

@@ -81,7 +81,7 @@ class _LoginSrceenState extends State<LoginSrceen> {
 
       Log.green(savedAuthData);
 
-      if (mounted) context.goNamed(AppScreen.main.name);
+      if (mounted) context.goNamed(AppScreen.users.name);
     }
     // if (statusCode == 200) {
     //   Log.green("Success");
