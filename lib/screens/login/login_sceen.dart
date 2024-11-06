@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:daelim/common/extensions/context_extension.dart';
 import 'package:daelim/config.dart';
+import 'package:daelim/helper/api_helper.dart';
 import 'package:daelim/routes/app_screen.dart';
 import 'package:easy_extension/easy_extension.dart';
 import 'package:flutter/material.dart';
@@ -55,34 +56,17 @@ class _LoginSrceenState extends State<LoginSrceen> {
     Log.cyan(_emailController.value.text);
     Log.cyan(_pwController.value.text);
 
-    final loginData = {
-      "email": email,
-      "password": password,
-    };
+    final authData = await ApiHelper.signIn(email: email, password: password);
 
-    final response =
-        await http.post(Uri.parse(getTokenUrl), body: jsonEncode(loginData));
-
-    final statusCode = response.statusCode;
-    final body = utf8.decode(response.bodyBytes);
-
-    if (statusCode != 200) {
-      if (mounted) {
-        context.showSnackBar(body);
-      }
-    } else {
-      // Auth Data로 변환
-      final authData = AuthData.fromJson(body);
-      await StorageHelper.setAuthData(authData);
-
-      final savedAuthData = StorageHelper.authData;
-
-      //TODO: 화면 이동
-
-      Log.green(savedAuthData);
-
-      if (mounted) context.goNamed(AppScreen.users.name);
+    if (authData == null) {
+      if (mounted) context.showSnackBar('로그인 실패');
+      return;
     }
+
+    // Auth Data로 변환
+    await StorageHelper.setAuthData(authData);
+
+    if (mounted) context.goNamed(AppScreen.users.name);
     // if (statusCode == 200) {
     //   Log.green("Success");
     //   Log.green(authData);

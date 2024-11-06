@@ -5,6 +5,7 @@ import 'package:daelim/common/scaffold/app_scaffold.dart';
 import 'package:daelim/config.dart';
 import 'package:daelim/helper/sotrage_helper.dart';
 import 'package:daelim/routes/app_screen.dart';
+import 'package:daelim/screens/setting/dialog/change_password_dialog.dart';
 import 'package:easy_extension/easy_extension.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -118,36 +119,51 @@ class _SettingScreenState extends State<SettingScreen> {
 // if (response.statusCode == 200) print('Uploaded!');
   }
 
+  Future<void> _changePasswordDialog() async {
+    showDialog(
+        context: context, builder: (context) => const ChangePasswordDialog());
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
       appScreen: AppScreen.setting,
-      child: Column(
-        children: [
-          ListTile(
-            leading: InkWell(
-              onTap: _uploadProfileImage,
-              child: CircleAvatar(
-                // backgroundColor: Colors.grey,
-                backgroundImage: _profileImageUrl != null
-                    ? _profileImageUrl!.isNotEmpty
-                        ? NetworkImage(_profileImageUrl!)
-                        : null
-                    : null,
-                child: _profileImageUrl != null
-                    ? _profileImageUrl!.isEmpty
-                        ? const Icon(Icons.cancel)
-                        : null
-                    : const CircularProgressIndicator(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14.0),
+        child: Column(
+          children: [
+            //NOTE 유저 정보 표시(프로필 사진, 이름, 학번)
+            ListTile(
+              leading: InkWell(
+                onTap: _uploadProfileImage,
+                child: CircleAvatar(
+                  // backgroundColor: Colors.grey,
+                  backgroundImage: _profileImageUrl != null
+                      ? _profileImageUrl!.isNotEmpty
+                          ? NetworkImage(_profileImageUrl!)
+                          : null
+                      : null,
+                  child: _profileImageUrl != null
+                      ? _profileImageUrl!.isEmpty
+                          ? const Icon(Icons.cancel)
+                          : null
+                      : const CircularProgressIndicator(),
+                ),
               ),
+              title: Text(_name ?? '데이터 로딩중..'),
+              subtitle: _studentNumber != null
+                  ? Text(_studentNumber!,
+                      maxLines: 1, overflow: TextOverflow.ellipsis)
+                  : null,
             ),
-            title: Text(_name ?? '데이터 로딩중..'),
-            subtitle: _studentNumber != null
-                ? Text(_studentNumber!,
-                    maxLines: 1, overflow: TextOverflow.ellipsis)
-                : null,
-          )
-        ],
+            //NOTE 비밀번호 변경 버튼
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              const Text('비밀번호 변경'),
+              ElevatedButton(
+                  onPressed: _changePasswordDialog, child: const Text('변경하기'))
+            ])
+          ],
+        ),
       ),
       // bottomNavigationBar: BottomNavigationBar(items: const [
       //   BottomNavigationBarItem(icon: Icon(Icons.home), label: "홈"),
