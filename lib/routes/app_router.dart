@@ -1,6 +1,7 @@
 import 'package:daelim/helper/sotrage_helper.dart';
 import 'package:daelim/routes/app_screen.dart';
 import 'package:daelim/screens/login/login_sceen.dart';
+import 'package:daelim/screens/rooms/rooms_screen.dart';
 import 'package:daelim/screens/users/users_screen.dart';
 import 'package:daelim/screens/setting/setting_screen.dart';
 import 'package:easy_extension/easy_extension.dart';
@@ -29,7 +30,7 @@ final appRouter = GoRouter(
         name: AppScreen.login.name,
         builder: (context, state) => const LoginSrceen()),
 
-    // NOTE: 메인화면
+    // NOTE: 유저목록화면
 
     GoRoute(
         path: AppScreen.users.toPath,
@@ -37,6 +38,14 @@ final appRouter = GoRouter(
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: UsersScreen())),
 
+//NOTE:coxld ahrfhr ghkaus
+    GoRoute(
+        path: AppScreen.chattingRooms.toPath,
+        name: AppScreen.chattingRooms.name,
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: RoomsScreen())),
+
+    // NOTE: 설정화면
     // NOTE: 설정화면
     GoRoute(
         path: AppScreen.setting.toPath,

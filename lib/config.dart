@@ -1,15 +1,28 @@
-//NOTE:몌ㅑ ghcnf URL
-const String _baseUrl = 'https://daelim-server.fleecy.dev/functions/v1';
-const String getTokenUrl = '$_baseUrl/auth/get-token';
-const String getUserDataUrl = '$_baseUrl/auth/my-data';
-const String setProfileImageUrl = '$_baseUrl/auth/set-profile-image';
+class Config {
+  static const String _baseFunctionUrl =
+      'https://daelim-server.fleecy.dev/functions/v1';
+  static const String _storagePublicUrl =
+      'https://daelim-server.fleecy.dev/storage/v1/object/public';
 
-const String _storagePublicUrl =
-    'https://daelim-server.fleecy.dev/storage/v1/object/public';
-// NOTE:아이콘URL
-const String icGoogle = '$_storagePublicUrl/icons/google.png';
-const String icApple = '$_storagePublicUrl/icons/apple.png';
-const String icGithub = '$_storagePublicUrl/icons/github.png';
+  static const storage = ();
+  static const icon = (
+    google: '$_storagePublicUrl/icons/google.png',
+    apple: '$_storagePublicUrl/icons/apple.png',
+    github: '$_storagePublicUrl/icons/github.png',
+  );
 
-//NOTE:이미지URL
-const String defaultProfileImageUrl = '$_storagePublicUrl/icons/user.png';
+  static const image = (
+    defaultProfile: '$_storagePublicUrl/icons/user.png', //
+  );
+
+  static const api = (
+    getToken: '$_baseFunctionUrl/auth/get-token',
+    getUserData: '$_baseFunctionUrl/auth/my-data',
+    setProfileImage: '$_baseFunctionUrl/auth/set-profile-image',
+    changePassword: '$_baseFunctionUrl/auth/reset-password',
+    getUserList: '$_baseFunctionUrl/users',
+  );
+
+  ///functions/v1/auth/reset-password
+  ///
+}

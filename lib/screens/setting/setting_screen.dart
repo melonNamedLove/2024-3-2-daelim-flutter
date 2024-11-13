@@ -38,7 +38,7 @@ class _SettingScreenState extends State<SettingScreen> {
     final tokenType = StorageHelper.authData!.tokenType.firstUpperCase;
     final token = StorageHelper.authData!.accessToken;
 
-    final response = await http.get(Uri.parse(getUserDataUrl),
+    final response = await http.get(Uri.parse(Config.api.getUserData),
         headers: {'Authorization': '$tokenType $token'});
 
     final statusCode = response.statusCode;
@@ -92,7 +92,7 @@ class _SettingScreenState extends State<SettingScreen> {
     final token = StorageHelper.authData!.accessToken;
 
     final uploadRequest = http.MultipartRequest(
-        'POST', Uri.parse(setProfileImageUrl))
+        'POST', Uri.parse(Config.api.setProfileImage))
       ..headers.addAll({HttpHeaders.authorizationHeader: '$tokenType $token'})
       ..files.add(await http.MultipartFile.fromPath('image', imagePath,
           contentType: MediaType(mimeType, mimeSubType)));

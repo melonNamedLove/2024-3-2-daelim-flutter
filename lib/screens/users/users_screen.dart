@@ -1,5 +1,6 @@
 import 'package:daelim/common/scaffold/app_scaffold.dart';
 import 'package:daelim/config.dart';
+import 'package:daelim/helper/api_helper.dart';
 import 'package:daelim/models/user_data.dart';
 import 'package:daelim/routes/app_screen.dart';
 import 'package:easy_extension/easy_extension.dart';
@@ -14,20 +15,27 @@ class UsersScreen extends StatefulWidget {
 }
 
 class _UsersScreenState extends State<UsersScreen> {
-  final List<UserData> _dummyDataList = List.generate(
-    20,
-    (i) {
-      final index = i + 1;
-      return UserData(
-        id: '$index',
-        name: "유저 $index",
-        email: "$index@daelim.ac.kr",
-        studentNumber: "$index",
-        profileImageUrl: defaultProfileImageUrl,
-      );
-    },
-  );
-  List<UserData> _searchedDataList = [];
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserList();
+  }
+
+  // final List<UserData> _dummyDataList = List.generate(
+  //   20,
+  //   (i) {
+  //     final index = i + 1;
+  //     return UserData(
+  //       id: '$index',
+  //       name: "유저 $index",
+  //       email: "$index@daelim.ac.kr",
+  //       studentNumber: "$index",
+  //       profileImageUrl: Config.image.defaultProfile,
+  //     );
+  //   },
+  // );
+  List<UserData> _users = [];
+  List<UserData> _searchedUsers = [];
 
   final _defaultInputBorder = const OutlineInputBorder(
       borderSide: BorderSide(
@@ -35,15 +43,19 @@ class _UsersScreenState extends State<UsersScreen> {
       ),
       borderRadius: BorderRadius.all(Radius.circular(10)));
 
-  void _initState() {
-    super.initState();
-    _searchedDataList = _dummyDataList;
+// NOTE: 유저 목록 가져오기
+  Future<void> _fetchUserList() async {
+    _users = await ApiHelper.fetchUserList();
+    Log.green('유저 목록 : ${_users.length}');
+    setState(() {
+      _searchedUsers = _users;
+    });
   }
 
   //NOTE: 유저검색
   void _onSearch(String value) {
     setState(() {
-      _searchedDataList = _dummyDataList
+      _searchedUsers = _users
           .where((e) => e.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
@@ -53,16 +65,28 @@ class _UsersScreenState extends State<UsersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userCount = _searchedUsers.length;
     return AppScaffold(
       appScreen: AppScreen.users,
+      appBar: AppBar(
+          leadingWidth: 0,
+          titleSpacing: 0,
+          leading: const SizedBox.shrink(),
+          title: Text(
+            "유저 목록 ($userCount)",
+            style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+            // style: context.thene.textTheme.titleLarge
+          ),
+          actions: const []),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Padding(
           padding: const EdgeInsets.all(16),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            ///유저 목록 ㅌ이틀
-            const Text("유저 목록",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)),
+            // ///유저 목록 ㅌ이틀
+            // Text("유저 목록 ($userCount)",
+            //     style:
+            //         const TextStyle(fontWeight: FontWeight.bold, fontSize: 28)),
             15.heightBox,
 
             // NOTE :검색바
@@ -82,7 +106,7 @@ class _UsersScreenState extends State<UsersScreen> {
         ),
         const Divider(),
 
-        if (_searchedDataList.isEmpty)
+        if (_searchedUsers.isEmpty)
           // NOTE: 검색결과 없음
           Container(
             alignment: Alignment.center,
@@ -92,10 +116,10 @@ class _UsersScreenState extends State<UsersScreen> {
         else
           Expanded(
             child: ListView.separated(
-              itemCount: _searchedDataList.length,
+              itemCount: _searchedUsers.length,
               separatorBuilder: (context, index) => const Divider(),
               itemBuilder: (context, index) {
-                final dummy = _searchedDataList[index];
+                final dummy = _searchedUsers[index];
                 return ListTile(
                   leading: CircleAvatar(
                     foregroundImage: NetworkImage(dummy.profileImageUrl),

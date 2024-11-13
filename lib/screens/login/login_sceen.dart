@@ -39,7 +39,7 @@ class _LoginSrceenState extends State<LoginSrceen> {
 
   // Note : 로그인 API 호출
   void _onFetchedApi() async {
-    final response = await http.post(Uri.parse(getTokenUrl),
+    final response = await http.post(Uri.parse(Config.api.getToken),
         headers: {}, body: jsonEncode(body));
 
     // Log.green(response.body);
@@ -263,13 +263,13 @@ class _LoginSrceenState extends State<LoginSrceen> {
                               //gestureDetector
                               _buildSsoButton(
                                   onTap: () => _onSsoSignIn(SsoEnum.google),
-                                  iconUrl: icGoogle),
+                                  iconUrl: Config.icon.google),
                               _buildSsoButton(
                                   onTap: () => _onSsoSignIn(SsoEnum.apple),
-                                  iconUrl: icApple),
+                                  iconUrl: Config.icon.apple),
                               _buildSsoButton(
                                   onTap: () => _onSsoSignIn(SsoEnum.github),
-                                  iconUrl: icGithub),
+                                  iconUrl: Config.icon.github),
                             ])
                       ],
                     ),
