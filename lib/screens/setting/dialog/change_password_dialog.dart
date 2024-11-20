@@ -127,11 +127,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
     }
 
     // NOTE: 비밀번호 변경 성공
-    await StorageHelper.removeAuthData();
-    if (mounted) {
-      context.showSnackBar('비밀번호를 변경했습니다. 다시 로그인해주세요');
-      context.goNamed(AppScreen.login.name);
-    }
+    if (!mounted) return;
+    ApiHelper.signOut(context);
   }
 
   @override
