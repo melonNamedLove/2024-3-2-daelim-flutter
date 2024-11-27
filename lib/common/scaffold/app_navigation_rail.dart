@@ -19,12 +19,13 @@ class AppNavigationRail extends StatelessWidget {
             backgroundColor: context.thene.scaffoldBackgroundColor,
             onDestinationSelected: (value) {
               // Log.green("onDestinationSelected: $value");
-              final screen = AppScreen.values[value + 1];
+              final screen = AppScreen.values[value + 2];
               context.goNamed(screen.name);
             },
-            selectedIndex: appScreen.index - 1,
-            destinations:
-                AppScreen.values.filter((e) => e != AppScreen.login).map((e) {
+            selectedIndex: appScreen.index - 2,
+            destinations: AppScreen.values
+                .filter((e) => e != AppScreen.login && e != AppScreen.chat)
+                .map((e) {
               return NavigationRailDestination(
                   icon: Icon(e.getIcon), label: Text(e.name));
             }).toList(),

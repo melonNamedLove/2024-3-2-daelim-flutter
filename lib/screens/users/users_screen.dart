@@ -1,4 +1,5 @@
 import 'package:daelim/api_error.dart';
+import 'package:daelim/common/extensions/context_extension.dart';
 import 'package:daelim/common/scaffold/app_scaffold.dart';
 import 'package:daelim/config.dart';
 import 'package:daelim/helper/api_helper.dart';
@@ -8,6 +9,7 @@ import 'package:daelim/screens/login/login_sceen.dart';
 import 'package:daelim/screens/users/widgets/user_item.dart';
 import 'package:easy_extension/easy_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class UsersScreen extends StatefulWidget {
@@ -67,22 +69,40 @@ class _UsersScreenState extends State<UsersScreen> {
   //NOTE: 채팅방 개설
   void _onCreateRoom(UserData user) async {
     Log.green('채팅방 개설 : ${user.name}');
-    final (code, error) = await ApiHelper.createChatRoom(user.id);
-    Log.green(code);
-    Log.green(error);
-    if (code == ApiError.createChatRoom.success) {
-      //채팅방 개설 완료
-    } else if (code == ApiError.createChatRoom.requiredUserId) {
-      //상대방 ID 는 필수입니다
-    } else if (code == ApiError.createChatRoom.cannotMySelf) {
-      //자기 자신과 대화할 수 없습니다.
-    } else if (code == ApiError.createChatRoom.notFound) {
-      //상대방을 찾을 수 없습니다.
-    } else if (code == ApiError.createChatRoom.onlyCanChatbot) {
-      //챗봇 계정만 대화할 수 있습니다.
-    } else if (code == ApiError.createChatRoom.alreadyRoom) {
+    final (code, roomId) = await ApiHelper.createChatRoom(user.id);
+
+    switch (code) {
+      case 200:
+        //채팅방 개설 완료
+        Log.green('채팅방 개설 완료 : $roomId');
+        break;
+      case 1001:
+        //상대방 ID 는 필수입니다
+        context.showSnackBar('상대방 id는 필수입니다.');
+        break;
+      case 1002:
+        //자기 자신과 대화할 수 없습니다.
+        context.showSnackBar('자기 자신과 대화할 수 없습니다.');
+        break;
+      case 1003:
+        //상대방을 찾을 수 없습니다.
+        context.showSnackBar('상대방을 찾을 수 없습니다.');
+        break;
+      case 1004:
+        //챗봇 계정만 대화할 수 있습니다.
+        context.showSnackBar('챗봇 계정만 대화할 수 있습니다.');
+        break;
+      case 1005:
+        Log.green('채팅방 이미 있음 : $roomId');
+        context.showSnackBar('이미 생성된 채팅방이 있습니다.');
+        context
+            .pushNamed(AppScreen.chat.name, pathParameters: {'roomId': roomId});
+        break;
       //이미 생성된 채팅방이 있습니다.
+      default:
+        break;
     }
+
     // //채팅방 개설 실패
     // if (code != 200) {
     //   Log.red('채팅방 개설 실패 : $error');

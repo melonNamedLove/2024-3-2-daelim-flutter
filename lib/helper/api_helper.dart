@@ -129,8 +129,10 @@ class ApiHelper {
 
     final bodyJson = jsonDecode(body);
     final int code = bodyJson['code'] ?? 404;
-    final String message = bodyJson['message'] ?? '';
+    final Map<String, dynamic> message = bodyJson['message'] ?? {};
 
-    return (code, message);
+    final String roomId = message['room_id'] ?? '';
+
+    return (code, roomId);
   }
 }

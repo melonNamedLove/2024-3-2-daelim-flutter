@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-enum AppScreen { login, users, chattingRooms, setting }
+enum AppScreen { login, chat, users, chattingRooms, setting }
 
 extension AppScreenExtension on AppScreen {
   String get toPath {
     switch (this) {
       case AppScreen.login:
         return "/login";
+      case AppScreen.chat:
+        return "/chat";
       case AppScreen.users:
         return "/users";
       case AppScreen.chattingRooms:
