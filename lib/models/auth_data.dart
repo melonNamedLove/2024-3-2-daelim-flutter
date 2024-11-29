@@ -1,11 +1,13 @@
 import 'dart:convert';
 
 class AuthData {
+  final String userId;
   final String accessToken;
   final String tokenType;
   final DateTime expiresAt;
   final String email;
   AuthData({
+    required this.userId,
     required this.accessToken,
     required this.tokenType,
     required this.expiresAt,
@@ -13,12 +15,14 @@ class AuthData {
   });
 
   AuthData copyWith({
+    String? userId,
     String? email,
     String? accessToken,
     String? tokenType,
     DateTime? expiresAt,
   }) {
     return AuthData(
+      userId: userId ?? this.userId,
       accessToken: accessToken ?? this.accessToken,
       tokenType: tokenType ?? this.tokenType,
       expiresAt: expiresAt ?? this.expiresAt,
@@ -38,6 +42,7 @@ class AuthData {
 //authdata로 매핑
   factory AuthData.fromMap(Map<String, dynamic> map) {
     return AuthData(
+      userId: map['user_id'],
       email: map['email'],
       accessToken: map['access_token'],
       tokenType: map['token_type'],
