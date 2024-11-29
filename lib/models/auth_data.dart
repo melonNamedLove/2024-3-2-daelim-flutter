@@ -22,16 +22,17 @@ class AuthData {
     DateTime? expiresAt,
   }) {
     return AuthData(
-      userId: userId ?? this.userId,
-      accessToken: accessToken ?? this.accessToken,
-      tokenType: tokenType ?? this.tokenType,
+      userId: userId ?? '',
+      accessToken: accessToken ?? '',
+      tokenType: tokenType ?? '',
       expiresAt: expiresAt ?? this.expiresAt,
-      email: email ?? this.email,
+      email: email ?? '',
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'userId': userId,
       'email': email,
       'access_token': accessToken,
       'token_type': tokenType,
@@ -42,11 +43,13 @@ class AuthData {
 //authdata로 매핑
   factory AuthData.fromMap(Map<String, dynamic> map) {
     return AuthData(
-      userId: map['user_id'],
-      email: map['email'],
-      accessToken: map['access_token'],
-      tokenType: map['token_type'],
-      expiresAt: DateTime.fromMillisecondsSinceEpoch(map['expires_at']),
+      userId: map['user_id'] ?? '', // Provide a default empty string if null
+      email: map['email'] ?? '', // Handle potential null values
+      accessToken: map['access_token'] ?? '',
+      tokenType: map['token_type'] ?? '',
+      expiresAt: map['expires_at'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['expires_at'])
+          : DateTime.now(), // Default to the current time if null
     );
   }
 

@@ -24,7 +24,7 @@ dependencies:
   http:
   http_parser:
   google_fonts: ^6.2.1
-  mime: ^1.0.4
+  mime: ^1.0.2
   shared_preferences: ^2.3.3
   supabase_flutter: ^2.8.1
 

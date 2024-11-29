@@ -105,6 +105,7 @@ class ApiHelper {
     final statusCode = response.statusCode;
     final body = utf8.decode(response.bodyBytes);
 
+    Log.green(body);
     if (statusCode != 200) {
       return [];
     }

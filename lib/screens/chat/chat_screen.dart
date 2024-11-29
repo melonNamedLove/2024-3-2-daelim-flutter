@@ -38,7 +38,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
 
     _dummyChatList = _dummyChatList.sortedBy((e) => e['created_at']);
-    // _stratMessageStream();
+    _startMessageStream();
   }
 
   @override
@@ -49,7 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
 //NOTE 메세지 스트림
-  void _stratMessageStream() {
+  void _startMessageStream() {
     final client = Supabase.instance.client;
 
     _messageStream = client
@@ -79,8 +79,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
     _client //
         .from('chat_messages')
-        .insert(
-            {'room_id': _roomId, 'sender_id': senderId, 'message': message});
+        .insert({'room_id': _roomId, 'sender_id': senderId, 'message': message})
+        .then((value) => {true, ''})
+        .catchError((e, stack) => (false, e.toString()));
+
+    _textController.clear();
   }
 
   @override
@@ -91,61 +94,96 @@ class _ChatScreenState extends State<ChatScreen> {
         body: Column(
           children: [
             Expanded(
-              child: ListView.separated(
-                itemCount: _dummyChatList.length,
-                separatorBuilder: (context, index) {
-                  return 15.heightBox;
-                },
-                padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
-                itemBuilder: (context, index) {
-                  final dummy = _dummyChatList[index];
-                  final senderId = dummy['sender_id'];
-                  final message = dummy['message'];
-                  final DateTime createdAt = dummy['created_at'];
+                child: StreamBuilder<List<dynamic>>(
+                    stream: _client
+                        .from('chat_messages')
+                        .stream(primaryKey: ['id']).eq('room_id', _roomId),
+                    builder: (context, snapshot) {
+                      // Handle loading state
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-                  final isMy = senderId == 'a';
-                  return Row(
-                    mainAxisAlignment: isMy //
-                        ? MainAxisAlignment.end
-                        : MainAxisAlignment.start,
-                    children: [
-                      Container(
-                          constraints: const BoxConstraints(
-                              maxWidth: 200, minHeight: 60),
-                          decoration: BoxDecoration(
-                              color: dummy['sender_id'] == 'a' //
-                                  ? _primaryColor
-                                  : _secondaryColor,
-                              // borderRadius: BorderRadius.circular(10),
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(!isMy ? 0 : 10),
-                                  topRight: Radius.circular(isMy ? 0 : 10),
-                                  bottomLeft: const Radius.circular(10),
-                                  bottomRight: const Radius.circular(10)),
-                              boxShadow: const [
-                                BoxShadow(
-                                    color: Colors.black12,
-                                    offset: Offset(0, 2),
-                                    blurRadius: 2,
-                                    spreadRadius: 2)
-                              ]),
-                          child: ListTile(
-                            title: Text(
-                              message,
-                              style: TextStyle(
-                                  color: isMy ? Colors.white : Colors.black),
-                            ),
-                            subtitle: Text(
-                              createdAt.toFormat('HH:mm'),
-                              style: TextStyle(
-                                  color: isMy ? Colors.white : Colors.black),
-                            ),
-                          )),
-                    ],
-                  );
-                },
-              ),
-            ),
+                      // Handle errors
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      }
+
+                      // Ensure data is not null
+                      final data = snapshot.data ?? [];
+
+                      // Handle empty data
+                      if (data.isEmpty) {
+                        return const Center(
+                          child:
+                              Text('메세지를 전송하세요'), // "Send a message" in Korean
+                        );
+                      }
+
+                      // Display the list of messages
+                      return ListView.separated(
+                        itemCount: _dummyChatList.length,
+                        separatorBuilder: (context, index) {
+                          return 15.heightBox;
+                        },
+                        padding:
+                            const EdgeInsets.only(top: 16, left: 16, right: 16),
+                        itemBuilder: (context, index) {
+                          final dummy = _dummyChatList[index];
+                          final senderId = dummy['sender_id'];
+                          final message = dummy['message'];
+                          final DateTime createdAt = dummy['created_at'];
+
+                          final isMy = senderId == 'a';
+                          return Row(
+                            mainAxisAlignment: isMy //
+                                ? MainAxisAlignment.end
+                                : MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                  constraints: const BoxConstraints(
+                                      maxWidth: 200, minHeight: 60),
+                                  decoration: BoxDecoration(
+                                      color: dummy['sender_id'] == 'a' //
+                                          ? _primaryColor
+                                          : _secondaryColor,
+                                      // borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.only(
+                                          topLeft:
+                                              Radius.circular(!isMy ? 0 : 10),
+                                          topRight:
+                                              Radius.circular(isMy ? 0 : 10),
+                                          bottomLeft: const Radius.circular(10),
+                                          bottomRight:
+                                              const Radius.circular(10)),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                            color: Colors.black12,
+                                            offset: Offset(0, 2),
+                                            blurRadius: 2,
+                                            spreadRadius: 2)
+                                      ]),
+                                  child: ListTile(
+                                    title: Text(
+                                      message,
+                                      style: TextStyle(
+                                          color: isMy
+                                              ? Colors.white
+                                              : Colors.black),
+                                    ),
+                                    subtitle: Text(
+                                      createdAt.toFormat('HH:mm'),
+                                      style: TextStyle(
+                                          color: isMy
+                                              ? Colors.white
+                                              : Colors.black),
+                                    ),
+                                  )),
+                            ],
+                          );
+                        },
+                      );
+                    })),
             // NOTE :메시지 전송 영역
             Container(
               padding: const EdgeInsets.all(16),
